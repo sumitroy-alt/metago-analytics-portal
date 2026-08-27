@@ -4,9 +4,9 @@ Next.js app that puts the five internal dashboards (LTV, Weight Loss, Sales &
 Prescription, FE Tracker, Engagement & Retention) behind **MetaGo Central Auth**
 (Google SSO), with per-user dashboard + download access and a user-management panel.
 
-**→ [One-click deploy + stakeholder guide: `DEPLOY.md`](./DEPLOY.md)**
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fsumitroy-alt%2Fmetago-analytics-portal&env=OIDC_CLIENT_ID,APP_URL,BOOTSTRAP_ADMINS,ALLOWED_EMAIL_DOMAIN&envDescription=MetaGo%20Central%20Auth%20client%20id%20plus%20app%20config&envLink=https%3A%2F%2Fgithub.com%2Fsumitroy-alt%2Fmetago-analytics-portal%2Fblob%2Fmain%2FDEPLOY.md&project-name=metago-analytics-portal&repository-name=metago-analytics-portal)
+**→ Tech team: start with [`HANDOFF.md`](./HANDOFF.md)** — what to deploy, which
+credentials to plug in, and who does what. [`DEPLOY.md`](./DEPLOY.md) has the finer
+detail.
 
 The whole dashboard UI (the artifact we built) is reused verbatim at
 `app/portal/portal.html`; this project wraps it in real authentication.
@@ -16,9 +16,10 @@ The whole dashboard UI (the artifact we built) is reused verbatim at
 ## How auth works
 
 Login is the standard **OAuth 2.0 Authorization Code + PKCE** flow against MetaGo
-Central Auth (`https://one.metago.health`), and tokens are verified with the
-official `@metago-health/auth-node` SDK (JWKS-based, `aud`-checked — no shared
-secret).
+Central Auth (`https://one.metago.health`), and tokens are verified against the
+auth service's public **JWKS** using the `jose` library (RS256, `iss`/`aud`/`typ`
+checked — no shared secret). `jose` is the same primitive MetaGo's own auth SDK uses;
+we call it directly so the app has no dependency on a private npm package.
 
 ```
 Browser → /api/auth/login → one.metago.health/oauth/authorize  (Google behind it)
@@ -28,7 +29,8 @@ Browser → /api/auth/login → one.metago.health/oauth/authorize  (Google behin
 ```
 
 - `lib/oidc.ts` — endpoints, PKCE, code/refresh exchange
-- `lib/auth.ts` — `getUser()` verifies the session cookie via the SDK → `{ id, email, role, client }`
+- `lib/verify.ts` — `verifyAccessToken()` checks the token against the JWKS via `jose`
+- `lib/auth.ts` — `getUser()` verifies the session cookie → `{ id, email, role, client }`
 - `middleware.ts` — sends unauthenticated requests to `/api/auth/login`
 - `app/portal/route.ts` — gates + serves the portal with `window.__ME__` (identity + access) injected
 - `app/portal/integration.js` — bridges the portal UI to that real identity (real sign-out, access-filtered cards)
@@ -72,37 +74,35 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 `BOOTSTRAP_ADMINS` (comma-separated emails) become admins on first login; everyone
 else lands as **pending** with no dashboards until an admin grants access.
 
-> **Note on the SDK:** `@metago-health/auth-node` is a MetaGo package. If it lives on a
-> private registry (GitHub Packages / private npm), add an `.npmrc` with your registry +
-> auth token before `npm install`, and set the exact version in `package.json` (the
-> `^1.0.0` here is a placeholder — confirm with the auth team).
+All dependencies are public npm packages — a plain `npm install` works, no private
+registry or `.npmrc` needed.
 
 ---
 
-## Deploy to Vercel
+## Deploy
 
-1. Push this folder to a Git repo and **Import Project** in Vercel.
-2. Set the env vars from `.env.example` in **Project → Settings → Environment Variables**
-   (`APP_URL` = your Vercel URL, e.g. `https://analytics.metago.health`).
-3. Add that URL's `/api/auth/callback` to the client's whitelisted redirect URIs.
-4. Deploy.
+Standard Next.js app — deploy on any Next.js host. Set the env vars from
+`.env.example`, and whitelist `${APP_URL}/api/auth/callback` with the auth team.
+Full step-by-step (including live-data setup) is in [`HANDOFF.md`](./HANDOFF.md).
 
 ---
 
 ## What's done vs. next
 
-**Done (this scaffold)**
-- Real MetaGo SSO login (Auth Code + PKCE) + SDK token verification.
+**Done**
+- Real MetaGo SSO login (Auth Code + PKCE) + JWKS token verification (`jose`).
 - Route protection; real identity injected into the portal; real sign-out.
-- All five dashboards, downloads, and the sync control (UI) carried over unchanged.
+- **All five dashboards live** — data pulled from the sheets by an hourly GitHub
+  Action (`scripts/refresh_data.py`), including LTV.
+- **Sync button wired** (`app/api/sync`) → triggers the refresh job on demand.
 - Per-user access model + admin API (`/api/users`).
 
-**Next (before go-live)**
-- **Swap the user store** in `lib/users.ts` from in-memory to **Vercel Postgres/KV**
-  (it currently resets per deploy and isn't shared across instances).
-- **Wire the User-Management panel** in the portal to the `/api/users` endpoints
-  (today it still edits a browser-local list from the prototype).
-- **refresh_token** rotation in a route handler (today an expired access token just
-  bounces the user through a silent re-login).
-- **Sync button → sheet refresh** (held per your call): a small `doPost` on each
-  sheet's Apps Script + a Vercel route that triggers it.
+**Next (config, not code — see [`HANDOFF.md`](./HANDOFF.md))**
+- Register the app with MetaGo Central Auth (`OIDC_CLIENT_ID` + redirect whitelist).
+- Add the Google service-account key so the hourly refresh can read the sheets.
+- Set `GITHUB_TOKEN` if you want the in-app Sync button to trigger refreshes.
+
+**Nice-to-haves before heavy traffic**
+- Swap the in-memory user store in `lib/users.ts` for a real DB (resets per deploy).
+- Wire the in-portal User-Management panel to `/api/users` (today it's browser-local).
+- Add `refresh_token` rotation (today an expired token re-triggers a silent login).

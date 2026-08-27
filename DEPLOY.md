@@ -71,22 +71,24 @@ commits it → **Vercel auto-redeploys** with fresh numbers.
 **One-time setup:**
 1. In **Google Cloud**, create a **service account** and download its **JSON key**.
    Enable the **Google Drive API** on that project.
-2. **Share each of the 4 sheets** (View access) with the service account's email
-   (`…@….iam.gserviceaccount.com`): Weight, Sales, FE Tracker, Engagement & Retention.
+2. **Share all 5 sheets** (View access) with the service account's email
+   (`…@….iam.gserviceaccount.com`): LTV, Weight, Sales, FE Tracker, Engagement &
+   Retention. (Sheet IDs are in `scripts/refresh_data.py`.)
 3. In **GitHub → repo → Settings → Secrets and variables → Actions**, add a secret
    **`GOOGLE_SERVICE_ACCOUNT_JSON`** = the full JSON key.
 4. Run it once: **Actions → "Refresh dashboard data" → Run workflow** (then it runs hourly).
 
 **Cadence:** hourly by default (edit the `cron` in `.github/workflows/refresh-data.yml`);
-pairs naturally with the sheets' own ~9am sync. The **Sync button** in the UI can later
-trigger this on demand.
+pairs naturally with the sheets' own ~9am sync.
 
-> LTV Opportunity data is still embedded in the UI (its parser is a follow-up); the other
-> four dashboards are live via this pipeline.
+**Sync-now button (optional):** set **`GITHUB_TOKEN`** (a token with `workflow` scope)
+in the app env so the in-app Sync button can trigger the refresh on demand. Without it,
+the hourly refresh still runs; the button just won't fire an on-demand pull.
+
+> **All five dashboards are live** via this pipeline (LTV included).
 
 ## Before real production traffic
 
-- Swap the in-memory store in `lib/users.ts` for **Vercel Postgres/KV** (it resets per deploy).
+- Swap the in-memory store in `lib/users.ts` for a real DB / KV (it resets per deploy).
 - Wire the User-Management panel to `/api/users`.
 - Add `refresh_token` rotation.
-- Add the LTV parser to `scripts/refresh_data.py` so LTV is live too.
