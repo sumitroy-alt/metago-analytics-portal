@@ -388,79 +388,19 @@ document.getElementById('cards').innerHTML=DASHBOARDS.map(d=>{
 
 /* ============ LTV DASHBOARD ============ */
 (function(){
-  const SCENARIOS=[['15%',2154958,52527,'1.50x',55331,'1.58x'],['25%',3591596,54786,'1.57x',58284,'1.67x'],['35%',5028234,57045,'1.63x',61238,'1.75x']];
-  const SUMMARY=[['DRUG',12244404,9749784,false],['DIAGNOSTIC',2276000,2276000,false],['DEVICES',2340600,2340600,false],['Total',16861004,14366384,true],['SPECIAL PROGRAMME (alternative)',6873090,null,false],['less  Disease-management drugs',-3965556,-3102864,false],['Total with programme',19768538,18136610,true]];
-  const DETAIL=[
-   {c:'drug',lbl:'DRUG',lvl:0,price:'mixed',dur:'6 months',vpc:15879,need:614,pb:'100%',cov:null,cp:'20%',net:null,gross:12244404,nr:9749784,children:[
-     {lbl:'Supplements',lvl:1,price:'mixed',dur:'6 months',vpc:10264,need:614,pb:'100%',cov:null,cp:'17%',net:null,gross:7604676,nr:6302148,children:[
-       {lbl:'Protein / muscle protect',price:'₹700/mo',dur:'6 months',vpc:4200,need:614,pb:'100%',cov:13,cp:'2%',net:601,gross:2578800,nr:2524200},
-       {lbl:'Omega-3 / lipid support',price:'₹401/mo',dur:'6 months',vpc:2406,need:498,pb:'81%',cov:24,cp:'5%',net:474,gross:1198188,nr:1140444},
-       {lbl:'Anti-inflammatory support',price:'₹401/mo',dur:'6 months',vpc:2406,need:503,pb:'82%',cov:55,cp:'11%',net:448,gross:1210218,nr:1077888},
-       {lbl:'Insulin-resistance support',price:'₹500/mo',dur:'6 months',vpc:3000,need:361,pb:'59%',cov:48,cp:'13%',net:313,gross:1083000,nr:939000},
-       {lbl:'Gut stack',price:'₹413/mo',dur:'6 months',vpc:2478,need:176,pb:'29%',cov:32,cp:'18%',net:144,gross:436128,nr:356832},
-       {lbl:'Vitamin D + B12',price:'₹379/mo',dur:'6 months',vpc:2274,need:483,pb:'79%',cov:367,cp:'76%',net:116,gross:1098342,nr:263784},
-     ]},
-     {lbl:'Disease management',lvl:1,price:'mixed',dur:'6 months',vpc:5197,need:597,pb:'97%',cov:null,cp:'22%',net:null,gross:3965556,nr:3102864,children:[
-       {lbl:'Fatty liver',price:'₹957/mo',dur:'6 months',vpc:5742,need:217,pb:'35%',cov:16,cp:'7%',net:201,gross:1246014,nr:1154142},
-       {lbl:'Cholesterol / lipids',price:'₹440/mo',dur:'6 months',vpc:2640,need:498,pb:'81%',cov:175,cp:'35%',net:323,gross:1314720,nr:852720},
-       {lbl:'Uric acid / gout',price:'₹676/mo',dur:'6 months',vpc:4056,need:168,pb:'27%',cov:35,cp:'21%',net:133,gross:681408,nr:539448},
-       {lbl:'Prediabetes',price:'₹125/mo',dur:'6 months',vpc:750,need:252,pb:'41%',cov:14,cp:'6%',net:238,gross:189000,nr:178500},
-       {lbl:'Blood pressure',price:'₹202/mo',dur:'6 months',vpc:1212,need:137,pb:'22%',cov:15,cp:'11%',net:122,gross:166044,nr:147864},
-       {lbl:'PCOS / PCOD',price:'₹500/mo',dur:'6 months',vpc:3000,need:51,pb:'8%',cov:11,cp:'22%',net:40,gross:153000,nr:120000},
-       {lbl:'Thyroid',price:'₹185/mo',dur:'6 months',vpc:1110,need:92,pb:'15%',cov:38,cp:'41%',net:54,gross:102120,nr:59940},
-       {lbl:'Type 2 diabetes',price:'₹125/mo',dur:'6 months',vpc:750,need:151,pb:'25%',cov:84,cp:'56%',net:67,gross:113250,nr:50250},
-     ]},
-     {lbl:'Therapy support',lvl:1,price:'₹183/mo',dur:'6 months',vpc:562,need:614,pb:'100%',cov:null,cp:'49%',net:null,gross:674172,nr:344772,children:[
-       {lbl:'GLP-1 side-effect kit',price:'₹183/mo',dur:'6 months',vpc:1098,need:614,pb:'100%',cov:300,cp:'49%',net:314,gross:674172,nr:344772},
-     ]},
-   ]},
-   {c:'diag',lbl:'DIAGNOSTIC',lvl:0,price:'mixed',dur:'1 in 6 mo',vpc:3707,need:614,pb:'100%',cov:'n/a',cp:'n/a',net:null,gross:2276000,nr:null,children:[
-     {lbl:'Tests & scans',lvl:1,price:'mixed',dur:'1 in 6 mo',vpc:3000,need:614,pb:'100%',cov:'n/a',cp:'n/a',net:null,gross:1842000,nr:null,children:[
-       {lbl:'Extended panel',price:'₹1,500',dur:'1 in 6 mo',vpc:1500,need:614,pb:'100%',cov:'n/a',cp:'n/a',net:614,gross:921000,nr:null},
-       {lbl:'Body composition',price:'₹1,500',dur:'1 in 6 mo',vpc:1500,need:614,pb:'100%',cov:'n/a',cp:'n/a',net:614,gross:921000,nr:null},
-     ]},
-     {lbl:'Referrals',lvl:1,price:'₹2,000',dur:'1 in 6 mo',vpc:2000,need:217,pb:'35%',cov:'n/a',cp:'n/a',net:null,gross:434000,nr:null,children:[
-       {lbl:'FibroScan referral',price:'₹2,000',dur:'1 in 6 mo',vpc:2000,need:217,pb:'35%',cov:'n/a',cp:'n/a',net:217,gross:434000,nr:null},
-     ]},
-   ]},
-   {c:'dev',lbl:'DEVICES',lvl:0,price:'mixed',dur:'1 in 6 mo',vpc:5368,need:436,pb:'71%',cov:'n/a',cp:'n/a',net:null,gross:2340600,nr:null,children:[
-     {lbl:'Home devices',lvl:1,price:'mixed',dur:'1 in 6 mo',vpc:5368,need:436,pb:'71%',cov:'n/a',cp:'n/a',net:null,gross:2340600,nr:null,children:[
-       {lbl:'Glucometer + strips',price:'₹5,400',dur:'1 in 6 mo',vpc:5400,need:403,pb:'66%',cov:'n/a',cp:'n/a',net:403,gross:2176200,nr:null},
-       {lbl:'BP monitor',price:'₹1,200',dur:'1 in 6 mo',vpc:1200,need:137,pb:'22%',cov:'n/a',cp:'n/a',net:137,gross:164400,nr:null},
-     ]},
-   ]},
-   {c:'prog',lbl:'SPECIAL PROGRAMME (alt)',lvl:0,price:'mixed',dur:'6 months',vpc:11769,need:584,pb:'95%',cov:'n/a',cp:'n/a',net:null,gross:6873090,nr:null,children:[
-     {lbl:'Condition tracks',lvl:1,price:'mixed',dur:'6 months',vpc:11769,need:584,pb:'95%',cov:'n/a',cp:'n/a',net:null,gross:6873090,nr:null,children:[
-       {lbl:'Cardiometabolic track',price:'₹1,023/mo',dur:'6 months',vpc:6138,need:498,pb:'81%',cov:'n/a',cp:'n/a',net:498,gross:3056724,nr:null},
-       {lbl:'Metabolic track (sugar)',price:'₹825/mo',dur:'6 months',vpc:4950,need:403,pb:'66%',cov:'n/a',cp:'n/a',net:403,gross:1994850,nr:null},
-       {lbl:'Liver / MASLD track',price:'₹1,190/mo',dur:'6 months',vpc:7140,need:217,pb:'35%',cov:'n/a',cp:'n/a',net:217,gross:1549380,nr:null},
-       {lbl:'Thyroid track',price:'₹493/mo',dur:'6 months',vpc:2958,need:92,pb:'15%',cov:'n/a',cp:'n/a',net:92,gross:272136,nr:null},
-     ]},
-   ]},
-  ];
-  const FRESH={
-   '2026-06':{patients:106,rx:123,docs:9,rows:[['Dr. Kaushal Patel',48,61,60250,1255],['Dr. Shahzeen Ansari',25,26,18437,737],['Dr. Nikita Pawar',13,14,9328,718],['Dr. Nilesh Kumawat',5,6,3275,655],['Dr. Abhijeet Sharma',3,null,1105,368],['Dr. Vishal Mishra',7,null,4699,671],['Dr. Trupti Prasad',2,3,1092,546],['Dr. Shubhashree Patil',2,null,126,63],['Dr. Deep Hathi',1,null,1622,null]],all:[106,123,99934,943]},
-   '2026-07':{patients:119,rx:134,docs:9,rows:[['Dr. Kaushal Patel',42,45,47458,1130],['Dr. Shahzeen Ansari',20,23,16588,829],['Dr. Nikita Pawar',16,18,17081,1068],['Dr. Nilesh Kumawat',13,null,7023,540],['Dr. Abhijeet Sharma',12,16,8611,718],['Dr. Vishal Mishra',7,10,3129,447],['Dr. Trupti Prasad',4,null,1537,384],['Dr. Shubhashree Patil',2,null,360,180],['Dr. Deep Hathi',3,null,4309,1436]],all:[119,134,106096,892]},
-   '2026-08':{patients:107,rx:115,docs:8,rows:[['Dr. Kaushal Patel',47,52,47414,1009],['Dr. Shahzeen Ansari',13,14,8893,684],['Dr. Nikita Pawar',9,10,10418,1158],['Dr. Nilesh Kumawat',14,null,9682,692],['Dr. Abhijeet Sharma',16,null,4289,268],['Dr. Trupti Prasad',4,null,2110,528],['Dr. Shubhashree Patil',2,3,129,65],['Dr. Deep Hathi',2,null,2272,1136]],all:[107,115,85207,796]},
-  };
-  const REPEAT={
-   '2026-06':{patients:196,rx:217,docs:13,rows:[['Dr. Kaushal Patel',26,35,28443,1094,83054,'19%',66970,2576],['Dr. Shahzeen Ansari',43,45,52650,1224,151218,'22%',117741,2738],['Dr. Vishal Mishra',30,32,26328,878,102784,'22%',79670,2656],['Dr. Deep Hathi',31,32,25985,838,103094,'17%',85157,2747],['Dr. Nikita Pawar',25,28,24975,999,78095,'21%',61593,2464],['Dr. Abhijeet Sharma',18,21,8573,476,58403,'16%',49292,2738],['Dr. Trupti Prasad',8,null,5083,635,22534,'25%',16861,2108],['Dr. Johann Varghese',7,8,5150,736,21530,'14%',18444,2635],['Dr. Shubhashree Patil',2,null,1060,530,6494,'21%',5111,2556],['Dr. Parag Agrawal',2,null,3032,1516,6460,'31%',4437,2219],['Dr. Yash Chauhan',2,null,836,418,8980,'13%',7782,3891],['Dr. Abhinav Garg',1,null,30,null,4671,'0%',4671,null],['Dr. Nilesh Kumawat',1,null,126,null,1663,'23%',1284,null]],all:[196,217,182271,930,648980,'20%',519013,2648]},
-   '2026-07':{patients:295,rx:322,docs:13,rows:[['Dr. Kaushal Patel',69,78,84560,1226,230432,'19%',185650,2691],['Dr. Shahzeen Ansari',72,77,75390,1047,242505,'21%',191884,2665],['Dr. Vishal Mishra',40,44,35626,891,134937,'23%',104105,2603],['Dr. Deep Hathi',28,29,28359,1013,97577,'18%',79872,2853],['Dr. Nikita Pawar',29,31,24938,860,95641,'20%',76630,2642],['Dr. Abhijeet Sharma',23,25,20131,875,77884,'20%',62044,2698],['Dr. Trupti Prasad',10,12,7262,726,29149,'24%',22218,2222],['Dr. Nilesh Kumawat',8,10,5207,651,23762,'14%',20439,2555],['Dr. Johann Varghese',9,null,6906,767,30135,'12%',26642,2960],['Dr. Shubhashree Patil',3,null,1529,510,10489,'9%',9546,3182],['Dr. Parag Agrawal',2,null,4862,2431,6460,'53%',3037,1519],['Dr. Abhinav Garg',1,null,30,null,4671,'0%',4671,null]],all:[295,322,294800,999,985731,'20%',788827,2674]},
-   '2026-08':{patients:335,rx:355,docs:12,rows:[['Dr. Kaushal Patel',89,98,124395,1398,297206,'24%',226995,2551],['Dr. Shahzeen Ansari',65,67,69220,1065,214909,'20%',171058,2632],['Dr. Nikita Pawar',39,41,49292,1264,125929,'26%',93327,2393],['Dr. Abhijeet Sharma',40,44,38851,971,138597,'18%',114043,2851],['Dr. Vishal Mishra',35,37,36402,1040,116540,'23%',89634,2561],['Dr. Deep Hathi',30,null,31549,1052,106852,'19%',86129,2871],['Dr. Nilesh Kumawat',16,null,12870,804,52645,'21%',41656,2604],['Dr. Trupti Prasad',9,10,7885,876,27086,'24%',20548,2283],['Dr. Johann Varghese',5,null,3060,612,16272,'12%',14335,2867],['Dr. Shubhashree Patil',5,null,1779,356,15906,'11%',14080,2816],['Dr. Parag Agrawal',1,null,2428,null,3129,'54%',1427,null],['Dr. Abhinav Garg',1,null,30,null,4671,'0%',4671,null]],all:[335,355,377761,1128,1119742,'22%',877903,2621]},
-  };
-  const OPP=[['Acquired customers',NUM(735)],['Onboarded customers',NUM(636)],['Total revenue collected',INR(31252511)],['CAC per customer',INR(35000)],['LTV : CAC','1.40x'],['Total opportunity (gross)',INR(16861004)],['Net of already prescribed',INR(14366384)],['Net opportunity per customer',INR(22589)],['Scored on (has lab values)',NUM(614)]];
+  var _L=window.LTV;var SCENARIOS=_L.scenarios,SUMMARY=_L.summary,DETAIL=_L.detail,FRESH=_L.fresh,REPEAT=_L.repeat,OPP=_L.opp;
   function ltvcac(v,cac){return (v/cac).toFixed(2)+'x';}
-  var LTV_COLLECTED=31252511, LTV_ONBOARDED=636;
+  var LTV_COLLECTED=_L.collected, LTV_ONBOARDED=_L.onboarded;
   function renderOpp(){
     var prev=document.getElementById('cac-input');
     var cac=prev?(parseFloat(prev.value)||35000):35000;
     var todayLTV=LTV_COLLECTED/LTV_ONBOARDED;
     document.getElementById('ltv-opportunity').innerHTML=OPP.map(function(m,i){
-      var val=m[1];
+      var val;if([0,1,8].indexOf(i)>=0)val=NUM(m[1]);else if([2,5,6,7].indexOf(i)>=0)val=INR(m[1]);else val=m[1];
       if(i===3){val='<input id="cac-input" type="number" step="1000" min="1000" value="'+cac+'" style="width:96px;font-family:inherit;font-size:13px;text-align:right;border:1px solid var(--accent);border-radius:6px;padding:3px 7px;background:var(--surface);color:var(--ink)"> <span style="font-size:11px;color:var(--ink-3)">✎ editable</span>';}
       if(i===4){val='<b id="cac-today">'+ltvcac(todayLTV,cac)+'</b>';}
       var sc;
-      if(i<3){var s=SCENARIOS[i];sc='<td class="num mono mstart">'+s[0]+'</td><td class="num">'+INR(s[1])+'</td><td class="num">'+INR(s[2])+'</td><td class="num"><b id="cac-d'+i+'">'+ltvcac(s[2],cac)+'</b></td><td class="num">'+INR(s[4])+'</td><td class="num"><b id="cac-p'+i+'">'+ltvcac(s[4],cac)+'</b></td>';}
+      if(i<3){var s=SCENARIOS[i];sc='<td class="num mono mstart">'+Math.round(s[0]*100)+'%</td><td class="num">'+INR(s[1])+'</td><td class="num">'+INR(s[2])+'</td><td class="num"><b id="cac-d'+i+'">'+ltvcac(s[2],cac)+'</b></td><td class="num">'+INR(s[3])+'</td><td class="num"><b id="cac-p'+i+'">'+ltvcac(s[3],cac)+'</b></td>';}
       else{sc='<td class="mstart"></td><td></td><td></td><td></td><td></td><td></td>';}
       return '<tr><td class="lbl">'+m[0]+'</td><td class="num">'+val+'</td>'+sc+'</tr>';
     }).join('');
@@ -471,18 +411,18 @@ document.getElementById('cards').innerHTML=DASHBOARDS.map(d=>{
     var cac=parseFloat(document.getElementById('cac-input').value)||35000;
     var todayLTV=LTV_COLLECTED/LTV_ONBOARDED;
     document.getElementById('cac-today').textContent=ltvcac(todayLTV,cac);
-    for(var i=0;i<3;i++){document.getElementById('cac-d'+i).textContent=ltvcac(SCENARIOS[i][2],cac);document.getElementById('cac-p'+i).textContent=ltvcac(SCENARIOS[i][4],cac);}
+    for(var i=0;i<3;i++){document.getElementById('cac-d'+i).textContent=ltvcac(SCENARIOS[i][2],cac);document.getElementById('cac-p'+i).textContent=ltvcac(SCENARIOS[i][3],cac);}
   }
   renderOpp();
   document.getElementById('ltv-summary').innerHTML=SUMMARY.map(s=>`<tr class="${s[3]?'total':''}"><td class="lbl">${s[0]}</td><td class="num">${s[1]<0?'('+INR(-s[1])+')':INR(s[1])}</td><td class="num">${s[2]==null?'—':(s[2]<0?'('+INR(-s[2])+')':INR(s[2]))}</td></tr>`).join('');
   const pillCls={drug:'p-drug',diag:'p-diag',dev:'p-dev',prog:'p-prog'};
   let rows=[];
   function flatten(node,path,cat){const has=node.children&&node.children.length;rows.push({...node,path,cat,has,type:'row'});if(has)node.children.forEach((ch,i)=>flatten(ch,path+'.'+i,cat));}
-  [0,1,2].forEach(i=>flatten(DETAIL[i],''+i,DETAIL[i].c));
-  rows.push({type:'total',path:'gt',cells:{lbl:'GRAND TOTAL — programme excluded',price:'mixed',dur:'mixed',vpc:23398,need:614,pb:'100%',cov:'—',cp:'n/a',net:'—',gross:16861004,nr:14366384}});
+  [0,1,2].forEach(i=>flatten(DETAIL[i],''+i,DETAIL[i].cat));
+  rows.push({type:'total',path:'gt',cells:_L.grand});
   rows.push({type:'note',path:'note',text:'If we sell the Special Programme instead of the disease-management drugs, the total changes as follows:'});
-  flatten(DETAIL[3],'3',DETAIL[3].c);
-  rows.push({type:'total',path:'pt',cells:{lbl:'TOTAL — less disease-mgmt drugs, plus programme',price:'',dur:'',vpc:null,need:null,pb:'',cov:'',cp:'',net:'',gross:19768538,nr:18136610}});
+  flatten(DETAIL[3],'3',DETAIL[3].cat);
+  rows.push({type:'total',path:'pt',cells:_L.progTotal});
   const expanded=new Set(); /* LTV detail collapsed initially */
   function dataCells(o){const cov=o.cov==null?'—':(typeof o.cov==='number'?NUM(o.cov):o.cov);const net=o.net==null?'—':(typeof o.net==='number'?NUM(o.net):o.net);return `<td class="num muted">${o.price||''}</td><td class="num muted">${o.dur||''}</td><td class="num">${o.vpc==null?'':INR(o.vpc)}</td><td class="num">${o.need==null?'':NUM(o.need)}</td><td class="num">${o.pb||''}</td><td class="num">${cov}</td><td class="num">${o.cp||''}</td><td class="num">${net}</td><td class="num">${o.gross==null?'':INR(o.gross)}</td><td class="num">${o.nr==null?'—':INR(o.nr)}</td>`;}
   function rowHtml(r){if(r.type==='note')return `<tr class="noterow"><td class="lbl" colspan="11">${r.text}</td></tr>`;if(r.type==='total')return `<tr class="total grandtotal"><td class="lbl">${r.cells.lbl}</td>${dataCells(r.cells)}</tr>`;const cls=r.lvl===0?'lvl0':(r.lvl===1?'lvl1':'lvl2 leaf');const inner=r.lvl===0?`<span class="pill ${pillCls[r.cat]}">${r.lbl}</span>`:r.lbl;const label=r.has?`<button class="tog"><span class="caret">${expanded.has(r.path)?'▾':'▸'}</span>${inner}</button>`:inner;return `<tr class="${cls}" data-path="${r.path}"><td class="lbl">${label}</td>${dataCells(r)}</tr>`;}
@@ -1014,12 +954,7 @@ document.getElementById('cards').innerHTML=DASHBOARDS.map(d=>{
     var r=chip.getBoundingClientRect();pop.style.top=(r.bottom+6)+'px';pop.style.right=Math.max(8,(window.innerWidth-r.right))+'px';
     pop.classList.toggle('hidden');
   });
-  document.getElementById('sp-now').onclick=function(){
-    var d=window.currentDash;if(!d)return;syncing=true;
-    document.getElementById('syncchip').innerHTML='<span class="spin"></span> Syncing '+(NAME[d]||'')+'…';
-    document.getElementById('sp-now').textContent='Syncing…';document.getElementById('sp-now').disabled=true;
-    setTimeout(function(){get(d).last=Date.now();save();syncing=false;var b=document.getElementById('sp-now');b.textContent='↻ Sync now';b.disabled=false;document.getElementById('sp-last').textContent='just now';window.__syncUpd();},1200);
-  };
+  document.getElementById('sp-now').onclick=function(){var d=window.currentDash;if(!d)return;syncing=true;document.getElementById('syncchip').innerHTML='<span class="spin"></span> Refreshing '+(NAME[d]||'')+' from source...';var b=document.getElementById('sp-now');b.textContent='Refreshing...';b.disabled=true;function done(msg){get(d).last=Date.now();save();syncing=false;b.textContent='↻ Sync now';b.disabled=false;document.getElementById('sp-last').textContent='just now';window.__syncUpd();if(msg)alert(msg);}fetch('/api/sync',{method:'POST'}).then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j};},function(){return {ok:r.ok,j:{}};});}).then(function(res){if(res.ok&&res.j.queued){done('Refresh queued - the dashboards update in ~1-2 minutes once the data job finishes and redeploys.');}else{done('Live refresh runs in the deployed app; here the timestamp just updated.'+(res.j&&res.j.error?' ('+res.j.error+')':''));}}).catch(function(){done('Live refresh runs in the deployed app; here the timestamp just updated.');});}
   document.getElementById('sp-auto').onchange=function(){var d=window.currentDash;if(!d)return;get(d).auto=this.checked;save();window.__syncUpd();};
   var _od=window.openDash;window.openDash=function(id){_od(id);window.__syncUpd();};
 })();

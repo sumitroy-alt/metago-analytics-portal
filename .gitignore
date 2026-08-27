@@ -8,3 +8,6 @@ out
 .DS_Store
 .vercel
 next-env.d.ts
+
+# sheets downloaded by refresh_data.py at CI time
+scripts/*.xlsx

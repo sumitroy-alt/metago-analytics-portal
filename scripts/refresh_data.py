@@ -28,11 +28,12 @@ SHEETS = {
     'sales.xlsx':  '1FlY3urpuhvC9HSQczeXCacWilujJxr308uHg16O3xQU',
     'fe.xlsx':     '1VVFE_wq5Q1XdZBG_fBu0PJ7ogHbfBv_PTypxl9oc048',
     'ret.xlsx':    '1O6EGA833uz8OdJcI9L7Axdbqm_lAEKLvj4E-oHvlHp8',
+    'ltv.xlsx':    '1hifgKA-h_cJARz6ZkGBRT_E8FtIlDpgk61juli5lFSY',
 }
-PARSERS = ['parse_weight.py', 'parse_sales.py', 'parse_fe.py', 'parse_ret.py']
+PARSERS = ['parse_weight.py', 'parse_sales.py', 'parse_fe.py', 'parse_ret.py', 'parse_ltv.py']
 # concatenated in this order into data.js (order is irrelevant at runtime)
 OUTPUTS = ['aug_data.js', 'med_data.js', 'coach_data.js', 'mom_data.js',
-           'sales_data.js', 'fe_data.js', 'ret_data.js']
+           'sales_data.js', 'fe_data.js', 'ret_data.js', 'ltv_data.js']
 
 
 def credentials():
