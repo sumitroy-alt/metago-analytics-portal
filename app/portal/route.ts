@@ -14,8 +14,13 @@ let TEMPLATE: string | null = null;
 function template(): string {
   if (TEMPLATE) return TEMPLATE;
   const dir = path.join(process.cwd(), 'app', 'portal');
-  const portal = fs.readFileSync(path.join(dir, 'portal.html'), 'utf8');
+  let portal = fs.readFileSync(path.join(dir, 'portal.html'), 'utf8');
   const integ = fs.readFileSync(path.join(dir, 'integration.js'), 'utf8');
+  // Inject the (refreshable) dashboard data at the placeholder. This file is
+  // regenerated from the live sheets by scripts/refresh_data.py (GitHub Action),
+  // so the dashboards track the sheets without touching the UI.
+  const data = fs.readFileSync(path.join(dir, 'data.js'), 'utf8');
+  portal = portal.replace('<!--LIVE_DATA-->', `<script>\n${data}\n</script>`);
   TEMPLATE =
     '<!doctype html><html lang="en"><head><meta charset="utf-8">' +
     '<meta name="viewport" content="width=device-width, initial-scale=1">' +

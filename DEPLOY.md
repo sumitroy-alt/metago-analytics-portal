@@ -58,8 +58,35 @@ Also confirm the **login scope** and whether the client is **public (PKCE)** or
 - [ ] Open the URL → you're bounced to MetaGo login → back in → dashboards load.
 - [ ] First admin (from `BOOTSTRAP_ADMINS`) opens **User management** (👥) and grants access.
 
+## Live data refresh (auto-updating dashboards)
+
+The dashboard numbers come from `app/portal/data.js`, which is **regenerated from the
+live sheets** by a GitHub Action — so the dashboards track the sheets without any UI
+changes.
+
+**How it flows:** `refresh-data.yml` (hourly + on-demand) → reads the sheets with a
+Google **service account** → runs `scripts/refresh_data.py` → rewrites `data.js` →
+commits it → **Vercel auto-redeploys** with fresh numbers.
+
+**One-time setup:**
+1. In **Google Cloud**, create a **service account** and download its **JSON key**.
+   Enable the **Google Drive API** on that project.
+2. **Share each of the 4 sheets** (View access) with the service account's email
+   (`…@….iam.gserviceaccount.com`): Weight, Sales, FE Tracker, Engagement & Retention.
+3. In **GitHub → repo → Settings → Secrets and variables → Actions**, add a secret
+   **`GOOGLE_SERVICE_ACCOUNT_JSON`** = the full JSON key.
+4. Run it once: **Actions → "Refresh dashboard data" → Run workflow** (then it runs hourly).
+
+**Cadence:** hourly by default (edit the `cron` in `.github/workflows/refresh-data.yml`);
+pairs naturally with the sheets' own ~9am sync. The **Sync button** in the UI can later
+trigger this on demand.
+
+> LTV Opportunity data is still embedded in the UI (its parser is a follow-up); the other
+> four dashboards are live via this pipeline.
+
 ## Before real production traffic
 
 - Swap the in-memory store in `lib/users.ts` for **Vercel Postgres/KV** (it resets per deploy).
 - Wire the User-Management panel to `/api/users`.
 - Add `refresh_token` rotation.
+- Add the LTV parser to `scripts/refresh_data.py` so LTV is live too.
