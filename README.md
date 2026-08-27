@@ -4,6 +4,10 @@ Next.js app that puts the five internal dashboards (LTV, Weight Loss, Sales &
 Prescription, FE Tracker, Engagement & Retention) behind **MetaGo Central Auth**
 (Google SSO), with per-user dashboard + download access and a user-management panel.
 
+**→ [One-click deploy + stakeholder guide: `DEPLOY.md`](./DEPLOY.md)**
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fsumitroy-alt%2Fmetago-analytics-portal&env=OIDC_CLIENT_ID,APP_URL,BOOTSTRAP_ADMINS,ALLOWED_EMAIL_DOMAIN&envDescription=MetaGo%20Central%20Auth%20client%20id%20plus%20app%20config&envLink=https%3A%2F%2Fgithub.com%2Fsumitroy-alt%2Fmetago-analytics-portal%2Fblob%2Fmain%2FDEPLOY.md&project-name=metago-analytics-portal&repository-name=metago-analytics-portal)
+
 The whole dashboard UI (the artifact we built) is reused verbatim at
 `app/portal/portal.html`; this project wraps it in real authentication.
 
